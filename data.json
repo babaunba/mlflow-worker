@@ -1,0 +1,6 @@
+{
+  "mlflow_server": "http://127.0.0.1:6969",
+  "model_run_id": "1881d7e56a9b49a3a07294c9d7cda8fb",
+  "model_name": "label-suggestor",
+  "model_version": 1
+}
