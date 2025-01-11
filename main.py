@@ -13,7 +13,7 @@ def parse_args():
 
 def main():
     args = parse_args()
-    model_config, loaded_model = model.load_model(
+    loaded_model = model.load_model(
         mlflow_server_uri=args.mlflow_server,
         model_run_id=args.model_run_id,
         model_name=args.model_name,
@@ -22,15 +22,13 @@ def main():
 
     while True:
         issue_title = input(">>> ")
-        suggested_labels = model.run_query(
-            model=loaded_model,
-            model_config=model_config,
-            issue={
-                "title": issue_title,
-                "body": "",
-                "labels": [],
-            }
+        issue = model.Issue(
+            title=issue_title,
+            body="",
+            labels=[],
         )
+
+        suggested_labels = loaded_model.run(issue)
         print(f"Suggested labels: {suggested_labels}")
 
 
