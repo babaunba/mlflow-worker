@@ -18,6 +18,7 @@ class Issue:
     title: str
     body: str
     labels: list[str]
+    creator: str
 
 
 def _clean_markdown(text):
@@ -83,8 +84,12 @@ def _encode_specified_labels(mlb, ds):
     return mlb.fit_transform(ds["labels"])
 
 
+def _get_team_member_flag(issue: Issue, contributors: list[str]):
+    return issue.creator in contributors
+
+
 class Model:
-    def __init__(self, threshold, max_len, tokenizer, bert_model, model, project_labels):
+    def __init__(self, threshold, max_len, tokenizer, bert_model, model, project_labels, contributors):
         self._threshold = threshold
         self._max_len = max_len
         self._tokenizer = tokenizer
@@ -92,16 +97,19 @@ class Model:
         self._model = model
         self._project_labels = project_labels
         self._mlb = MultiLabelBinarizer(classes=project_labels)
+        self._contributors = contributors
 
     def run(self, issue: Issue) -> list[str]:
         ds = _build_dataframe(issue)
 
         embedding_vector = _get_embedding_vectors(self._bert_model, self._tokenizer, self._max_len, ds)[0]
         issue_encoded_labels = _encode_specified_labels(self._mlb, ds)[0]
+        is_team_member = _get_team_member_flag(issue, self._contributors)
 
         input_data = np.concatenate((
             embedding_vector,
             issue_encoded_labels.astype(float),
+            np.array([ is_team_member ], dtype=float),
         ))
 
         label_classes = self._project_labels
@@ -140,4 +148,5 @@ def load_model(mlflow_server_uri: str, model_run_id: str, model_name: str, model
         bert_model=bert_model,
         model=model,
         project_labels=model_config["project_labels"],
+        contributors=model_config["contributors"],
     )
