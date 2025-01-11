@@ -8,6 +8,8 @@ from transformers import BertTokenizer, BertModel
 import torch
 import warnings
 from dataclasses import dataclass
+from sklearn.preprocessing import MultiLabelBinarizer
+import numpy as np
 
 warnings.filterwarnings("ignore")
 
@@ -77,6 +79,10 @@ def _get_embedding_vectors(bert_model, tokenizer, max_len, ds):
     return _get_bert_embeddings(bert_model, tokenizer, max_len, texts)
 
 
+def _encode_specified_labels(mlb, ds):
+    return mlb.fit_transform(ds["labels"])
+
+
 class Model:
     def __init__(self, threshold, max_len, tokenizer, bert_model, model, project_labels):
         self._threshold = threshold
@@ -85,13 +91,22 @@ class Model:
         self._bert_model = bert_model
         self._model = model
         self._project_labels = project_labels
+        self._mlb = MultiLabelBinarizer(classes=project_labels)
 
     def run(self, issue: Issue) -> list[str]:
         ds = _build_dataframe(issue)
-        embedding_vectors = _get_embedding_vectors(self._bert_model, self._tokenizer, self._max_len, ds)
+
+        embedding_vector = _get_embedding_vectors(self._bert_model, self._tokenizer, self._max_len, ds)[0]
+        issue_encoded_labels = _encode_specified_labels(self._mlb, ds)[0]
+
+        input_data = np.concatenate((
+            embedding_vector,
+            issue_encoded_labels.astype(float),
+        ))
+
         label_classes = self._project_labels
 
-        probabilities = self._model.predict(embedding_vectors, verbose=0)
+        probabilities = self._model.predict(np.array([input_data]), verbose=0)
         predicted_classes_flags = (probabilities > self._threshold).astype(int)[0]
         predicted_classes = [
             label_classes[class_index]
