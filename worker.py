@@ -40,6 +40,7 @@ class GetLabelsWorkflow:
             title=req.title,
             body=req.body,
             labels=list(req.labels),
+            creator=req.creator,
         )
 
         suggested_labels = await workflow.execute_activity(
