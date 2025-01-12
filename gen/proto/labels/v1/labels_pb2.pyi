@@ -7,14 +7,16 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Optional as _Op
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class GetLabelsRequest(_message.Message):
-    __slots__ = ("title", "body", "labels")
+    __slots__ = ("title", "body", "labels", "creator")
     TITLE_FIELD_NUMBER: _ClassVar[int]
     BODY_FIELD_NUMBER: _ClassVar[int]
     LABELS_FIELD_NUMBER: _ClassVar[int]
+    CREATOR_FIELD_NUMBER: _ClassVar[int]
     title: str
     body: str
     labels: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, title: _Optional[str] = ..., body: _Optional[str] = ..., labels: _Optional[_Iterable[str]] = ...) -> None: ...
+    creator: str
+    def __init__(self, title: _Optional[str] = ..., body: _Optional[str] = ..., labels: _Optional[_Iterable[str]] = ..., creator: _Optional[str] = ...) -> None: ...
 
 class GetLabelsResponse(_message.Message):
     __slots__ = ("labels",)

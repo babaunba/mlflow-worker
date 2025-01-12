@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16labels/v1/labels.proto\x12\x13gen.proto.labels.v1\x1a\x1cgoogle/api/annotations.proto\"?\n\x10GetLabelsRequest\x12\r\n\x05title\x18\x01 \x01(\t\x12\x0c\n\x04\x62ody\x18\x02 \x01(\t\x12\x0e\n\x06labels\x18\x03 \x03(\t\"#\n\x11GetLabelsResponse\x12\x0e\n\x06labels\x18\x01 \x03(\t2|\n\x06Labels\x12r\n\tGetLabels\x12%.gen.proto.labels.v1.GetLabelsRequest\x1a&.gen.proto.labels.v1.GetLabelsResponse\"\x16\x82\xd3\xe4\x93\x02\x10\"\x0b/get-labels:\x01*B\x1cZ\x1agen/proto/labels/v1;labelsb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16labels/v1/labels.proto\x12\x13gen.proto.labels.v1\x1a\x1cgoogle/api/annotations.proto\"P\n\x10GetLabelsRequest\x12\r\n\x05title\x18\x01 \x01(\t\x12\x0c\n\x04\x62ody\x18\x02 \x01(\t\x12\x0e\n\x06labels\x18\x03 \x03(\t\x12\x0f\n\x07\x63reator\x18\x04 \x01(\t\"#\n\x11GetLabelsResponse\x12\x0e\n\x06labels\x18\x01 \x03(\t2|\n\x06Labels\x12r\n\tGetLabels\x12%.gen.proto.labels.v1.GetLabelsRequest\x1a&.gen.proto.labels.v1.GetLabelsResponse\"\x16\x82\xd3\xe4\x93\x02\x10\"\x0b/get-labels:\x01*B\x1cZ\x1agen/proto/labels/v1;labelsb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,9 +36,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_LABELS'].methods_by_name['GetLabels']._loaded_options = None
   _globals['_LABELS'].methods_by_name['GetLabels']._serialized_options = b'\202\323\344\223\002\020\"\013/get-labels:\001*'
   _globals['_GETLABELSREQUEST']._serialized_start=77
-  _globals['_GETLABELSREQUEST']._serialized_end=140
-  _globals['_GETLABELSRESPONSE']._serialized_start=142
-  _globals['_GETLABELSRESPONSE']._serialized_end=177
-  _globals['_LABELS']._serialized_start=179
-  _globals['_LABELS']._serialized_end=303
+  _globals['_GETLABELSREQUEST']._serialized_end=157
+  _globals['_GETLABELSRESPONSE']._serialized_start=159
+  _globals['_GETLABELSRESPONSE']._serialized_end=194
+  _globals['_LABELS']._serialized_start=196
+  _globals['_LABELS']._serialized_end=320
 # @@protoc_insertion_point(module_scope)
