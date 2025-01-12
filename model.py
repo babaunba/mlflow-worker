@@ -8,6 +8,8 @@ from transformers import BertTokenizer, BertModel
 import torch
 import warnings
 from dataclasses import dataclass
+from sklearn.preprocessing import MultiLabelBinarizer
+import numpy as np
 
 warnings.filterwarnings("ignore")
 
@@ -16,6 +18,7 @@ class Issue:
     title: str
     body: str
     labels: list[str]
+    creator: str
 
 
 def _clean_markdown(text):
@@ -77,21 +80,41 @@ def _get_embedding_vectors(bert_model, tokenizer, max_len, ds):
     return _get_bert_embeddings(bert_model, tokenizer, max_len, texts)
 
 
+def _encode_specified_labels(mlb, ds):
+    return mlb.fit_transform(ds["labels"])
+
+
+def _get_team_member_flag(issue: Issue, contributors: list[str]):
+    return issue.creator in contributors
+
+
 class Model:
-    def __init__(self, threshold, max_len, tokenizer, bert_model, model, project_labels):
+    def __init__(self, threshold, max_len, tokenizer, bert_model, model, project_labels, contributors):
         self._threshold = threshold
         self._max_len = max_len
         self._tokenizer = tokenizer
         self._bert_model = bert_model
         self._model = model
         self._project_labels = project_labels
+        self._mlb = MultiLabelBinarizer(classes=project_labels)
+        self._contributors = contributors
 
     def run(self, issue: Issue) -> list[str]:
         ds = _build_dataframe(issue)
-        embedding_vectors = _get_embedding_vectors(self._bert_model, self._tokenizer, self._max_len, ds)
+
+        embedding_vector = _get_embedding_vectors(self._bert_model, self._tokenizer, self._max_len, ds)[0]
+        issue_encoded_labels = _encode_specified_labels(self._mlb, ds)[0]
+        is_team_member = _get_team_member_flag(issue, self._contributors)
+
+        input_data = np.concatenate((
+            embedding_vector,
+            issue_encoded_labels.astype(float),
+            np.array([ is_team_member ], dtype=float),
+        ))
+
         label_classes = self._project_labels
 
-        probabilities = self._model.predict(embedding_vectors, verbose=0)
+        probabilities = self._model.predict(np.array([input_data]), verbose=0)
         predicted_classes_flags = (probabilities > self._threshold).astype(int)[0]
         predicted_classes = [
             label_classes[class_index]
@@ -125,4 +148,5 @@ def load_model(mlflow_server_uri: str, model_run_id: str, model_name: str, model
         bert_model=bert_model,
         model=model,
         project_labels=model_config["project_labels"],
+        contributors=model_config["contributors"],
     )

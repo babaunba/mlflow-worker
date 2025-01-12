@@ -26,6 +26,7 @@ def main():
             title=issue_title,
             body="",
             labels=[],
+            creator="some-user",
         )
 
         suggested_labels = loaded_model.run(issue)
